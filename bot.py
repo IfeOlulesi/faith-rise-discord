@@ -64,6 +64,19 @@ async def send_daily_verse(channel):
 async def on_ready():
     print(f'Logged in as {discord_client.user}')
 
+    # Get the channel using the channel ID
+    channel_id = int(os.getenv('DISCORD_CHANNEL_ID'))  # Convert to integer
+    channel = discord_client.get_channel(channel_id)  # Replace YOUR_CHANNEL_ID with the actual channel ID
+
+    if channel is None:
+        print("Error: Channel not found. Please check the channel ID.")  # Log if the channel is not found
+        return
+
+    # Schedule the job to run daily at 3:42 PM Nigerian time
+    scheduler.add_job(send_daily_verse, 'cron', hour=5, minute=00, args=[channel])  # Pass the channel object
+    print("Scheduled job to send the verse of the day at 5:00 PM Nigerian time.")  # Log when the job is scheduled
+    scheduler.start()
+
 @discord_client.event
 async def on_message(message):
     if message.author == discord_client.user:
