@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+.DS_Store
 
 # Distribution / packaging
 .Python
@@ -18,6 +19,7 @@ lib/
 lib64/
 parts/
 sdist/
+botenv/
 var/
 wheels/
 share/python-wheels/
