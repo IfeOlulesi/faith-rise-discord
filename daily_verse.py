@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from groq import Groq  # Import the Groq client
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
+from rhema_exchange import start_conversation
+
 
 load_dotenv()
 
@@ -10,7 +12,7 @@ load_dotenv()
 groq_api_key = os.getenv('GROQ_API_KEY')
 groq_client = Groq(api_key=groq_api_key)
 
-async def send_daily_verse(channel):
+async def send_daily_verse(channel, discord_client=False):
   """Generate and send the verse of the day using Groq."""  
   print("Triggering Groq API to fetch the verse of the day...")  # Log to terminal
 
@@ -43,6 +45,10 @@ async def send_daily_verse(channel):
     bot_response = f"""
     📖 **Verse of the Day** \n\n{verse}
     """
-    await channel.send(bot_response)
+    await channel.send(bot_response)    
+    await channel.send("What are your thoughts on today's verse? @here")
+    # Start a conversation and set a timeout for 10 PM
+    if discord_client is not False:
+      await start_conversation(channel, discord_client, groq_client)
   except Exception as e:
     print(f"Error fetching verse: {e}")  # Log any errors that occur

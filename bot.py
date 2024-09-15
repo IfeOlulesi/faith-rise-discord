@@ -1,7 +1,7 @@
 import discord
 import os
 from dotenv import load_dotenv
-from groq import Groq  # Import the Groq client
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import pytz
 
@@ -49,7 +49,7 @@ async def on_message(message):
 
   if message.content.startswith('!verse'):
     print(f"Received command from {message.author}: {message.content}")  # Log the command received
-    await send_daily_verse(message.channel)  # Send the verse immediately when the command is received
+    await send_daily_verse(message.channel, discord_client)  # Send the verse immediately when the command is received
 
 # Run the Discord bot
 discord_client.run(os.getenv('DISCORD_TEST_BOT_TOKEN'))
