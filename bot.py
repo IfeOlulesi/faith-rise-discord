@@ -1,23 +1,16 @@
-import discord
 import os
 from dotenv import load_dotenv
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import pytz
-import asyncio  # Add this import at the top
+import asyncio 
 
 from daily_verse import send_daily_verse 
+from constants import discord_client
 
 # Load environment variables
 load_dotenv()
-
-# Create intents
-intents = discord.Intents.default()
-intents.messages = True  # Enable the message intent
-intents.message_content = True 
-
-# Initialize the Discord client with intents
-discord_client = discord.Client(intents=intents)
+ENVIRONMENT = os.getenv('ENV')
 
 # Initialize the scheduler
 scheduler = AsyncIOScheduler()
@@ -31,7 +24,12 @@ async def on_ready():
   print(f'Logged in as {discord_client.user}')
 
   # Get the channel using the channel ID
-  channel_id = int(os.getenv('DISCORD_CHANNEL_ID')) 
+  channel_id = ''
+  if ENVIRONMENT == 'development':
+    channel_id = int(os.getenv('DEV_RHEMA_CHANNEL_ID')) 
+  else:
+    channel_id = int(os.getenv('DISCORD_CHANNEL_ID')) 
+    
   channel = discord_client.get_channel(channel_id) 
 
   if channel is None:
@@ -39,13 +37,13 @@ async def on_ready():
     return
 
   # Check if in development mode
-  if os.getenv('ENV') == 'development':
+  if ENVIRONMENT == 'development':
     await asyncio.sleep(5)  # Wait for 5 seconds before sending the verse
-    await send_daily_verse(channel)  
+    await send_daily_verse(channel)  # Send the verse immediately for development
   else:
     # Schedule the daily verse job for production
-    scheduler.add_job(send_daily_verse, 'cron', hour=5, minute=0, args=[channel])  
-    print("Scheduled job to send the verse of the day at 5:00 AM Nigerian time.")
+    scheduler.add_job(send_daily_verse, 'cron', hour=5, minute=0, args=[channel])  # Pass the channel object
+    print("Scheduled job to send the verse of the day at 5:00 AM Nigerian time.")  # Log when the job is scheduled
 
   scheduler.start()
 

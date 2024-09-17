@@ -1,9 +1,9 @@
 import os
 from dotenv import load_dotenv
-from groq import Groq  # Import the Groq client
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from groq import Groq  
 
 from rhema_exchange import start_conversation
+from constants import discord_client
 
 
 load_dotenv()
@@ -12,9 +12,9 @@ load_dotenv()
 groq_api_key = os.getenv('GROQ_API_KEY')
 groq_client = Groq(api_key=groq_api_key)
 
-async def send_daily_verse(channel, discord_client=False):
+async def send_daily_verse(channel):
   """Generate and send the verse of the day using Groq."""  
-  print("Triggering Groq API to fetch the verse of the day...")  # Log to terminal
+  print("Triggering Groq API to fetch the verse of the day...")
 
   try:
     chat_completion = groq_client.chat.completions.create(
@@ -37,7 +37,7 @@ async def send_daily_verse(channel, discord_client=False):
     )
 
     # Log the entire response from Groq
-    print("Response from Groq:", chat_completion)  # Log the full response object
+    # print("Response from Groq:", chat_completion)  # Log the full response object
 
     # Extract the generated verse from the response
     verse = chat_completion.choices[0].message.content
@@ -46,9 +46,9 @@ async def send_daily_verse(channel, discord_client=False):
     📖 **Verse of the Day** \n\n{verse}
     """
     await channel.send(bot_response)    
-    await channel.send("What are your thoughts on today's verse? @here")
+    await channel.send("What are your thoughts on today's verse? @everyone")
     # Start a conversation and set a timeout for 10 PM
     if discord_client is not False:
-      await start_conversation(channel, discord_client, groq_client)
+      await start_conversation(channel, discord_client, groq_client, verse)
   except Exception as e:
     print(f"Error fetching verse: {e}")  # Log any errors that occur
