@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import pytz
+import asyncio  # Add this import at the top
 
 from daily_verse import send_daily_verse 
 
@@ -30,16 +31,22 @@ async def on_ready():
   print(f'Logged in as {discord_client.user}')
 
   # Get the channel using the channel ID
-  channel_id = int(os.getenv('DISCORD_CHANNEL_ID'))  # Convert to integer
-  channel = discord_client.get_channel(channel_id)  # Replace YOUR_CHANNEL_ID with the actual channel ID
+  channel_id = int(os.getenv('DISCORD_CHANNEL_ID')) 
+  channel = discord_client.get_channel(channel_id) 
 
   if channel is None:
-    print("Error: Channel not found. Please check the channel ID.")  # Log if the channel is not found
+    print("Error: Channel not found. Please check the channel ID.")
     return
 
-  # Schedule the job to run daily at 3:42 PM Nigerian time
-  scheduler.add_job(send_daily_verse, 'cron', hour=5, minute=00, args=[channel])  # Pass the channel object
-  print("Scheduled job to send the verse of the day at 5:00 PM Nigerian time.")  # Log when the job is scheduled
+  # Check if in development mode
+  if os.getenv('ENV') == 'development':
+    await asyncio.sleep(5)  # Wait for 5 seconds before sending the verse
+    await send_daily_verse(channel)  
+  else:
+    # Schedule the daily verse job for production
+    scheduler.add_job(send_daily_verse, 'cron', hour=5, minute=0, args=[channel])  
+    print("Scheduled job to send the verse of the day at 5:00 AM Nigerian time.")
+
   scheduler.start()
 
 @discord_client.event
