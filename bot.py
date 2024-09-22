@@ -5,23 +5,23 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import pytz
 import asyncio 
 
-from daily_verse import send_daily_verse 
-from constants import discord_client
+from app.daily_verse import send_daily_verse 
+from app.constants import discord_client
 
-# Load environment variables
+from utils.logger import emit_log
+ 
+
 load_dotenv()
 ENVIRONMENT = os.getenv('ENV')
 
-# Initialize the scheduler
-scheduler = AsyncIOScheduler()
-
-# Hardcoded timezone for Nigeria
+scheduler = AsyncIOScheduler() 
 nigeria_tz = pytz.timezone('Africa/Lagos')
 
 
 @discord_client.event
 async def on_ready():
-  print(f'Logged in as {discord_client.user}')
+  emit_log('info', f'Logged in as {discord_client.user}')
+  
 
   # Get the channel using the channel ID
   channel_id = ''
@@ -33,7 +33,7 @@ async def on_ready():
   channel = discord_client.get_channel(channel_id) 
 
   if channel is None:
-    print("Error: Channel not found. Please check the channel ID.")
+    emit_log('err', "ERROR: Channel not found. Please check the channel ID.")
     return
 
   # Check if in development mode
@@ -42,8 +42,8 @@ async def on_ready():
     await send_daily_verse(channel)  # Send the verse immediately for development
   else:
     # Schedule the daily verse job for production
-    scheduler.add_job(send_daily_verse, 'cron', hour=5, minute=0, args=[channel])  # Pass the channel object
-    print("Scheduled job to send the verse of the day at 5:00 AM Nigerian time.")  # Log when the job is scheduled
+    scheduler.add_job(send_daily_verse, 'cron', hour=5, minute=0, args=[channel])
+    emit_log('info', 'Scheduled job to send the verse of the day at 5:00 AM Nigerian time.' )
 
   scheduler.start()
 
@@ -53,8 +53,8 @@ async def on_message(message):
     return
 
   if message.content.startswith('!verse'):
-    print(f"Received command from {message.author}: {message.content}")  # Log the command received
-    await send_daily_verse(message.channel, discord_client)  # Send the verse immediately when the command is received
+    emit_log('info', f"Received command from {message.author}: {message.content}")
+    await send_daily_verse(message.channel, discord_client)
 
-# Run the Discord bot
+
 discord_client.run(os.getenv('DISCORD_TEST_BOT_TOKEN'))

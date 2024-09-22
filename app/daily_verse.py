@@ -2,8 +2,9 @@ import os
 from dotenv import load_dotenv
 from groq import Groq  
 
-from rhema_exchange import start_conversation
-from constants import discord_client
+from .rhema_exchange import start_conversation
+from .constants import discord_client
+from utils.logger import emit_log
 
 
 load_dotenv()
@@ -14,7 +15,8 @@ groq_client = Groq(api_key=groq_api_key)
 
 async def send_daily_verse(channel):
   """Generate and send the verse of the day using Groq."""  
-  print("Triggering Groq API to fetch the verse of the day...")
+  
+  emit_log('info', "Triggering Groq API to fetch the verse of the day...")
 
   try:
     chat_completion = groq_client.chat.completions.create(
