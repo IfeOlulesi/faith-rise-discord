@@ -9,14 +9,16 @@ import random
 
 load_dotenv()
 
+DB_PATH = os.getenv("DB_LOCAL_PATH")
+
 # Initialize the Groq client
 groq_api_key = os.getenv('GROQ_API_KEY')
 groq_client = Groq(api_key=groq_api_key)
 
 
 # Read data from CSV
-INPUT_FILE = r'C:\Users\ioabimbola-olulesi\Documents\Projects\faith-rise-discord\db\daily_verses_from_books_estimate.csv'
-OUTPUT_BASE_PATH = r'C:\Users\ioabimbola-olulesi\Documents\Projects\faith-rise-discord\db\books'  # Change to your desired output file path
+INPUT_FILE = DB_PATH + r'daily_verses_from_books_estimate.csv'
+OUTPUT_BASE_PATH = DB_PATH + r'books'  # Change to your desired output file path
 
 # Load the CSV file
 df = pd.read_csv(INPUT_FILE)  # Changed from pd.read_excel to pd.read_csv

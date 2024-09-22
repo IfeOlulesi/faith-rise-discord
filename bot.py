@@ -33,7 +33,7 @@ async def on_ready():
   channel = discord_client.get_channel(channel_id) 
 
   if channel is None:
-    emit_log('err', "ERROR: Channel not found. Please check the channel ID.")
+    emit_log('err', "Channel not found. Please check the channel ID.")
     return
 
   # Check if in development mode
