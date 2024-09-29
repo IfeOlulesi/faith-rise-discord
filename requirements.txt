@@ -34,10 +34,13 @@ idna==3.8
 martian==2.0.post1
 multidict==6.0.5
 multipart==0.2.5
+numpy==2.1.1
+pandas==2.2.3
 persistent==6.0
 pycparser==2.22
 pydantic==2.9.0
 pydantic_core==2.23.2
+python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-gettext==5.0
 pytz==2024.1
