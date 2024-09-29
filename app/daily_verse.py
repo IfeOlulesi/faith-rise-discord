@@ -9,13 +9,14 @@ import pandas as pd
 load_dotenv() 
 
 async def send_daily_verse(channel): 
-  DB_PATH = os.getenv("DB_LOCAL_PATH")
+  # Use relative path to the db folder
+  DB_PATH = os.path.join(os.path.dirname(__file__), '../db/')
   emit_log('info', "Sending daily verse...")
 
   try:
     
     # Load the daily verses from the CSV file
-    daily_verses_df = pd.read_csv(DB_PATH+'daily_verses_from_books_estimate.csv')
+    daily_verses_df = pd.read_csv(os.path.join(DB_PATH, 'daily_verses_from_books_estimate.csv'))
     emit_log('info', 'Fetched daily verses lookup csv...')
     
     random_row = daily_verses_df.sample(n=1).iloc[0]
@@ -25,7 +26,7 @@ async def send_daily_verse(channel):
     emit_log('info', f'book name: {book_name}')
     
     row_index = int(random_row.name) + 1
-    filename = f"{DB_PATH}/books/{row_index}_{book_name}_Daily_Verses.csv"
+    filename = os.path.join(DB_PATH, 'books', f"{row_index}_{book_name}_Daily_Verses.csv")
     emit_log('info', f'Generated csv file path: {filename}')
 
     # Load the selected daily verses CSV file
