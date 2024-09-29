@@ -1,13 +1,12 @@
 import asyncio
-from groq import Groq  # Import the Groq client
 from datetime import datetime 
 import pytz
+from .constants import groq_client
 
 
-async def start_conversation(channel, discord_client, groq_client, verse):
+async def start_conversation(channel, discord_client, verse):
   # Create a dictionary to track user responses
   message_history = {}
-  # end_time = datetime.now(nigeria_tz).replace(hour=22, minute=0, second=0, microsecond=0)
 
   def check_response(message):
     return message.channel == channel and message.author != discord_client.user
